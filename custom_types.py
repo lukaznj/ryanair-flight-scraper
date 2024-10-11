@@ -1,4 +1,4 @@
-from attr import dataclass
+from dataclasses import dataclass
 from datetime import time, datetime
 
 
@@ -11,6 +11,7 @@ class PriceRecord:
 
 @dataclass
 class Flight:
+    flight_number: str
     departure_time: time
     arrival_time: time
     price_record: [PriceRecord]
@@ -21,3 +22,9 @@ class FlightRoute:
     origin: str
     destination: str
     flights: [Flight]
+
+
+@dataclass
+class PriceRecordUpdate:
+    flight_number: str
+    price_record: PriceRecord
