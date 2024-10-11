@@ -53,13 +53,15 @@ def format_new_flight_route(flights_data: [str]) -> FlightRoute:
 
     for flight_data in flights_data:
         lines = flight_data.split("\n")
+        filtered_lines = list(filter(
+            lambda line: line != "Select" and line != "Basic Fare" and "left at this price" not in line, lines))
         flight = Flight(
-            flight_number=lines[3],
-            departure_time=datetime.strptime(lines[1], "%H:%M").time(),
-            arrival_time=datetime.strptime(lines[5], "%H:%M").time(),
+            flight_number=filtered_lines[3],
+            departure_time=datetime.strptime(filtered_lines[1], "%H:%M").time(),
+            arrival_time=datetime.strptime(filtered_lines[5], "%H:%M").time(),
             price_record=[PriceRecord(
-                price=float(lines[9][1:]),
-                currency=lines[9][0],
+                price=float(filtered_lines[7][1:]),
+                currency=filtered_lines[7][0],
                 date_time=datetime.now()
             )]
         )
@@ -72,11 +74,13 @@ def format_new_price_records(flights_data: [str]) -> [PriceRecordUpdate]:
     price_records_updates = []
     for flight_data in flights_data:
         lines = flight_data.split("\n")
+        filtered_lines = list(filter(
+            lambda line: line != "Select" and line != "Basic Fare" and "left at this price" not in line, lines))
         price_record_update = PriceRecordUpdate(
-            flight_number=lines[3],
+            flight_number=filtered_lines[3],
             price_record=PriceRecord(
-                price=float(lines[9][1:]),
-                currency=lines[9][0],
+                price=float(filtered_lines[7][1:]),
+                currency=filtered_lines[7][0],
                 date_time=datetime.now()
             )
         )
