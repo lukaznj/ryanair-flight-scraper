@@ -1,5 +1,7 @@
 from dataclasses import dataclass
-from datetime import time, datetime
+from datetime import time, date, datetime
+
+from bson import ObjectId
 
 
 @dataclass
@@ -7,6 +9,7 @@ class PriceRecord:
     price: float
     currency: str
     date_time: datetime
+    _id: ObjectId = None
 
 
 @dataclass
@@ -14,17 +17,20 @@ class Flight:
     flight_number: str
     departure_time: time
     arrival_time: time
-    price_record: [PriceRecord]
+    price_record_ids: [ObjectId]
+    _id: ObjectId = None
 
 
 @dataclass
 class FlightRoute:
     origin: str
     destination: str
-    flights: [Flight]
+    flight_ids: [ObjectId]
+    _id: ObjectId = None
 
 
 @dataclass
-class PriceRecordUpdate:
-    flight_number: str
-    price_record: PriceRecord
+class CreateFlightRouteRequest:
+    origin: str
+    destination: str
+    date: date
