@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from custom_types import FlightRoute, Flight, PriceRecord
+from custom_types import FlightRoute, Flight, PriceRecord, PriceRecordUpdate
 
 FLIGHT_LIST_XPATH = "/html/body/app-root/flights-root/div/div/div/div/flights-lazy-content/flights-summary-container/flights-summary/div/div[1]/journey-container/journey/flight-list/ry-spinner/div/flight-card-new"
 
@@ -43,33 +43,43 @@ def scrape_flight_list(url: str) -> [str]:
         driver.quit()
 
 
-def format_scraped_flights_data(flights_data: [str]) -> [FlightRoute]:
-    """
-    Formats the scraped flight data into a list of FlightRoute objects.
+def format_new_flight_route(flights_data: [str]) -> FlightRoute:
+    lines = flights_data[0].split("\n")
+    formated_flight_route = FlightRoute(
+        origin=lines[2],
+        destination=lines[6],
+        flights=[]
+    )
 
-    Args:
-        flights_data (list of str): A list of strings, each representing a flight's details.
-
-    Returns:
-        list of FlightRoute: A list of FlightRoute objects containing the formatted flight data.
-    """
-    formated_flights_data = []
     for flight_data in flights_data:
         lines = flight_data.split("\n")
-        flight_route = FlightRoute(
-            origin=lines[2],
-            destination=lines[6],
-            flights=[Flight(
-                departure_time=datetime.strptime(lines[1], "%H:%M").time(),
-                arrival_time=datetime.strptime(lines[5], "%H:%M").time(),
-                price_record=[PriceRecord(
-                    price=float(lines[9][1:]),
-                    currency=lines[9][0],
-                    date_time=datetime.now()
-                )]
+        flight = Flight(
+            flight_number=lines[3],
+            departure_time=datetime.strptime(lines[1], "%H:%M").time(),
+            arrival_time=datetime.strptime(lines[5], "%H:%M").time(),
+            price_record=[PriceRecord(
+                price=float(lines[9][1:]),
+                currency=lines[9][0],
+                date_time=datetime.now()
             )]
-
         )
-        formated_flights_data.append(flight_route)
+        formated_flight_route.flights.append(flight)
 
-    return formated_flights_data
+    return formated_flight_route
+
+
+def format_new_price_records(flights_data: [str]) -> [PriceRecordUpdate]:
+    price_records_updates = []
+    for flight_data in flights_data:
+        lines = flight_data.split("\n")
+        price_record_update = PriceRecordUpdate(
+            flight_number=lines[3],
+            price_record=PriceRecord(
+                price=float(lines[9][1:]),
+                currency=lines[9][0],
+                date_time=datetime.now()
+            )
+        )
+        price_records_updates.append(price_record_update)
+
+    return price_records_updates
