@@ -2,6 +2,7 @@ import logging
 import os
 from datetime import datetime
 
+from bson import ObjectId
 from selenium import webdriver
 from selenium.common import TimeoutException
 from selenium.webdriver.chrome.service import Service
@@ -14,16 +15,7 @@ from custom_types import FlightRoute, Flight, PriceRecord
 FLIGHT_LIST_XPATH = "/html/body/app-root/flights-root/div/div/div/div/flights-lazy-content/flights-summary-container/flights-summary/div/div[1]/journey-container/journey/flight-list/ry-spinner/div/flight-card-new"
 
 
-def scrape_flight_list(url: str) -> [str]:
-    """
-    Scrapes the flight list from the given URL.
-
-    Args:
-        url (str): The URL to scrape the flight list from.
-
-    Returns:
-        list of str: A list of strings, each representing a flight's details.
-    """
+def scrape_flights(url: str) -> [[str]]:
     service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH"))
     # Add Chrome option --headless to run Chrome in headless mode
     driver = webdriver.Chrome(service=service)
@@ -34,7 +26,7 @@ def scrape_flight_list(url: str) -> [str]:
         elements = WebDriverWait(driver, float(os.getenv("WEBDRIVER_TIMEOUT"))).until(
             ec.presence_of_all_elements_located((By.XPATH, FLIGHT_LIST_XPATH))
         )
-        return [element.text for element in elements]
+        return [remove_unnecessary_data(element.text.split("\n")) for element in elements]
 
     except TimeoutException as exception:
         logging.error("Could not find the specified element with XPath: %s", FLIGHT_LIST_XPATH, exc_info=exception)
@@ -43,33 +35,33 @@ def scrape_flight_list(url: str) -> [str]:
         driver.quit()
 
 
-def format_scraped_flights_data(flights_data: [str]) -> [FlightRoute]:
-    """
-    Formats the scraped flight data into a list of FlightRoute objects.
+def format_flight_route(scraped_flight_lines: [str], flight_ids: [ObjectId]) -> FlightRoute:
+    return FlightRoute(
+        origin=scraped_flight_lines[1],
+        destination=scraped_flight_lines[5],
+        flight_ids=flight_ids
+    )
 
-    Args:
-        flights_data (list of str): A list of strings, each representing a flight's details.
 
-    Returns:
-        list of FlightRoute: A list of FlightRoute objects containing the formatted flight data.
-    """
-    formated_flights_data = []
-    for flight_data in flights_data:
-        lines = flight_data.split("\n")
-        flight_route = FlightRoute(
-            origin=lines[2],
-            destination=lines[6],
-            flights=[Flight(
-                departure_time=datetime.strptime(lines[1], "%H:%M").time(),
-                arrival_time=datetime.strptime(lines[5], "%H:%M").time(),
-                price_record=[PriceRecord(
-                    price=float(lines[9][1:]),
-                    currency=lines[9][0],
-                    date_time=datetime.now()
-                )]
-            )]
+def format_flight(scraped_flight_lines: [str], price_record_ids: [ObjectId]) -> Flight:
+    return Flight(
+        flight_number=scraped_flight_lines[2],
+        departure_time=datetime.strptime(scraped_flight_lines[0], "%H:%M").time(),
+        arrival_time=datetime.strptime(scraped_flight_lines[4], "%H:%M").time(),
+        price_record_ids=price_record_ids
+    )
 
-        )
-        formated_flights_data.append(flight_route)
 
-    return formated_flights_data
+def format_price_record(scraped_flight_lines: [str]) -> PriceRecord:
+    return PriceRecord(
+        price=float(scraped_flight_lines[6][1:]),
+        currency=scraped_flight_lines[6][0],
+        date_time=datetime.now()
+    )
+
+
+def remove_unnecessary_data(scraped_flight_lines: [str]) -> [str]:
+    return list(filter(
+        lambda
+            line: line != "Select" and line != "Ryanair" and "Fare" not in line and "Plus" not in line and "left at this price" not in line,
+        scraped_flight_lines))
