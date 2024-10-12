@@ -25,7 +25,9 @@ class Flight:
 class FlightRoute:
     origin: str
     destination: str
+    flight_time: time
     flight_ids: [ObjectId]
+    scrape_url: str = None
     _id: ObjectId = None
 
 

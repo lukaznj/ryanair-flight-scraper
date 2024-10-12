@@ -16,6 +16,10 @@ class MongoService:
         collection = self.get_collection(collection_name)
         return collection.find_one({"_id": ObjectId(object_id)})
 
+    def get_flight_by_flight_number(self, flight_number: str) -> ObjectId:
+        collection = self.get_collection("flights")
+        return collection.find_one({"flight_number": flight_number})["_id"]
+
     def close_connection(self):
         self.client.close()
 
@@ -56,5 +60,7 @@ def serialize_flight_route(flight_route: FlightRoute):
     return {
         "origin": flight_route.origin,
         "destination": flight_route.destination,
-        "flight_ids": flight_route.flight_ids
+        "flight_time": flight_route.flight_time.strftime("%Hh %Mm"),
+        "flight_ids": flight_route.flight_ids,
+        "scrape_url": flight_route.scrape_url
     }
