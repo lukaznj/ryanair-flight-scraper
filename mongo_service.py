@@ -12,6 +12,10 @@ class MongoService:
     def get_collection(self, collection_name: str):
         return self.db[collection_name]
 
+    def find_by_id(self, collection_name: str, object_id: ObjectId):
+        collection = self.get_collection(collection_name)
+        return collection.find_one({"_id": ObjectId(object_id)})
+
     def close_connection(self):
         self.client.close()
 
