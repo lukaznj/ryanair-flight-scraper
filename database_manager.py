@@ -16,7 +16,7 @@ def ryanair_url_maker(url: str) -> str:
 
 def create_flight_route(flight_route_request: CreateFlightRouteRequest, mongo_service: MongoService):
     url = ryanair_url_maker(flight_route_request)
-    scraped_flights = scrape_flights(url)
+    scraped_flights = scrape_flights(url)[0]
 
     flight_route = parse_flight_route(scraped_flights[0], [])
     flight_route.scrape_url = url

@@ -15,20 +15,25 @@ from custom_types import FlightRoute, Flight, PriceRecord
 FLIGHT_LIST_XPATH = "/html/body/app-root/flights-root/div/div/div/div/flights-lazy-content/flights-summary-container/flights-summary/div/div[1]/journey-container/journey/flight-list/ry-spinner/div/flight-card-new"
 
 
-def scrape_flights(url: str) -> [[str]]:
+def scrape_flights(urls: [str]) -> [[str]]:
     service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH"))
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
     driver = webdriver.Chrome(service=service, options=options)
 
+    to_return = []
+
     try:
-        driver.get(url)
+        for url in urls:
+            driver.get(url)
 
-        elements = WebDriverWait(driver, float(os.getenv("WEBDRIVER_TIMEOUT"))).until(
-            ec.presence_of_all_elements_located((By.XPATH, FLIGHT_LIST_XPATH))
-        )
+            elements = WebDriverWait(driver, float(os.getenv("WEBDRIVER_TIMEOUT"))).until(
+                ec.presence_of_all_elements_located((By.XPATH, FLIGHT_LIST_XPATH))
+            )
 
-        return [remove_unnecessary_data(element.text.split("\n")) for element in elements]
+            to_return.append([remove_unnecessary_data(element.text.split("\n")) for element in elements])
+
+        return to_return
 
     except TimeoutException as exception:
         logging.error("Could not find the specified element with XPath: %s", FLIGHT_LIST_XPATH, exc_info=exception)
