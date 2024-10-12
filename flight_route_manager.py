@@ -1,4 +1,6 @@
-from custom_types import CreateFlightRouteRequest
+from bson import ObjectId
+
+from custom_types import CreateFlightRouteRequest, PriceRecord, Flight
 from mongo_service import MongoService
 from scrape_engine import scrape_flights, format_price_record, format_flight, \
     format_flight_route
@@ -25,3 +27,11 @@ def create_flight_route(flight_route_request: CreateFlightRouteRequest, mongo_se
         flight_route.flight_ids.append(flight_id)
 
     mongo_service.save_flight_route(flight_route)
+
+
+def add_price_record(flight_id: ObjectId, price_record: PriceRecord, mongo_service: MongoService) -> ObjectId:
+    if mongo_service.find_by_id("flights", flight_id):
+        price_record_id = mongo_service.save_price_record(price_record)
+        mongo_service.get_collection("flights").update_one({"_id": ObjectId(flight_id)},
+                                                           {"$push": {"price_record_ids": price_record_id}})
+        return price_record_id
