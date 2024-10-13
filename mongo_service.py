@@ -20,6 +20,10 @@ class MongoService:
         collection = self.get_collection("flights")
         return collection.find_one({"flight_number": flight_number})["_id"]
 
+    def get_flight(self, flight_id: ObjectId) -> dict:
+        collection = self.get_collection("flights")
+        return collection.find_one({"_id": ObjectId(flight_id)})
+
     def close_connection(self):
         self.client.close()
 
