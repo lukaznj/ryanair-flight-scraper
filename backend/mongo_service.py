@@ -1,7 +1,7 @@
 from bson import ObjectId
 from pymongo import MongoClient
 
-from custom_types import FlightRoute, PriceRecord, Flight
+from custom_types import FlightRoute, PriceRecord, Flight, User
 
 
 class MongoService:
@@ -42,6 +42,10 @@ class MongoService:
         result = collection.insert_one(serialize_flight_route(flight_route))
         return result.inserted_id
 
+    def save_user(self, user: User) -> ObjectId:
+        collection = self.get_collection("users")
+        result = collection.insert_one(serialize_user(user))
+        return result.inserted_id
 
 def serialize_price_record(price_record: PriceRecord):
     return {
@@ -67,4 +71,10 @@ def serialize_flight_route(flight_route: FlightRoute):
         "flight_time": flight_route.flight_time.strftime("%Hh %Mm"),
         "flight_ids": flight_route.flight_ids,
         "scrape_url": flight_route.scrape_url
+    }
+
+def serialize_user(user: User):
+    return {
+        "email": user.email,
+        "tracked_flight_route_ids": user.tracked_flight_route_ids
     }

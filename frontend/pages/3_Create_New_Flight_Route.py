@@ -3,8 +3,10 @@ import os
 import streamlit as st
 import re
 
-from database_manager import create_flight_route
-from mongo_service import MongoService
+from backend.database_manager import create_flight_route
+from backend.mongo_service import MongoService
+
+st.set_page_config(page_title="Track New Flight", page_icon="🌍")
 
 
 def is_valid_email(email):

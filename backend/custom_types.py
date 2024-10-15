@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import time, date, datetime
 
 from bson import ObjectId
@@ -36,3 +36,9 @@ class CreateFlightRouteRequest:
     origin: str
     destination: str
     date: date
+
+@dataclass
+class User:
+    email: str
+    tracked_flight_route_ids: list[ObjectId] = field(default_factory=list)
+    _id: ObjectId = None
