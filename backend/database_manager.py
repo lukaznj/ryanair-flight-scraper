@@ -1,6 +1,6 @@
 from bson import ObjectId
 
-from custom_types import CreateFlightRouteRequest, PriceRecord, Flight
+from custom_types import CreateFlightRouteRequest, PriceRecord, Flight, User
 from mailgun_service import send_price_change_email
 from mongo_service import MongoService
 from scrape_engine import scrape_flights, parse_price_record, parse_flight, \
@@ -54,6 +54,10 @@ def update_flight(scraped_flight_lines: [str], mongo_service: MongoService) -> O
 
     return flight_id
 
+def create_user(email: str, mongo_service: MongoService):
+    user = User(email)
+    user_id = mongo_service.save_user(user)
+    return user_id
 
 def check_for_price_change(old_price_record: dict, new_price_record: PriceRecord) -> bool:
     if old_price_record["price"] == new_price_record.price:
