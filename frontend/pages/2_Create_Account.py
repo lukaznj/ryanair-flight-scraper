@@ -1,8 +1,7 @@
 import streamlit as st
+import sys
+import os
 import re
-
-from backend.database_manager import create_user
-from frontend import mongo_service
 
 
 def is_valid_email(email_input):
@@ -21,8 +20,9 @@ button = st.button("Register")
 if button:
     if is_valid_email(email):
         st.session_state['email'] = email
+
         # create_user(email)
-        mongo_service.find_by_id("flights", "670db49be901f7e808e2fbf2")
+    # mongo_service.find_by_id("flights", "670db49be901f7e808e2fbf2")
 
     else:
         st.error("Please enter a valid email address.")
