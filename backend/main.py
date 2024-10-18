@@ -1,11 +1,8 @@
-import os
 import time
 
 import schedule
-from dotenv import load_dotenv
 
 from backend import mongo_service
-from mongo_service import MongoService
 from run import run
 
 if __name__ == "__main__":

@@ -1,9 +1,11 @@
+import sys
+
 from bson import ObjectId
 
-from custom_types import CreateFlightRouteRequest, PriceRecord, Flight, User
-from mailgun_service import send_price_change_email
-from mongo_service import MongoService
-from scrape_engine import scrape_flights, parse_price_record, parse_flight, \
+from backend import mongo_service
+from backend.custom_types import CreateFlightRouteRequest, PriceRecord, User
+from backend.mailgun_service import send_price_change_email
+from backend.scrape_engine import scrape_flights, parse_price_record, parse_flight, \
     parse_flight_route, get_scraped_flight_number
 
 
@@ -15,7 +17,7 @@ def ryanair_url_maker(url: str) -> str:
     return url
 
 
-def create_flight_route(flight_route_request: CreateFlightRouteRequest, mongo_service: MongoService):
+def create_flight_route(flight_route_request: CreateFlightRouteRequest):
     url = ryanair_url_maker(flight_route_request)
     scraped_flights = scrape_flights([url])[0]
 
@@ -34,7 +36,7 @@ def create_flight_route(flight_route_request: CreateFlightRouteRequest, mongo_se
     mongo_service.save_flight_route(flight_route)
 
 
-def add_price_record(flight_id: ObjectId, price_record: PriceRecord, mongo_service: MongoService) -> ObjectId:
+def add_price_record(flight_id: ObjectId, price_record: PriceRecord) -> ObjectId:
     if mongo_service.find_by_id("flights", flight_id):
         price_record_id = mongo_service.save_price_record(price_record)
         mongo_service.get_collection("flights").update_one({"_id": ObjectId(flight_id)},
@@ -42,11 +44,11 @@ def add_price_record(flight_id: ObjectId, price_record: PriceRecord, mongo_servi
         return price_record_id
 
 
-def update_flight(scraped_flight_lines: [str], mongo_service: MongoService) -> ObjectId:
+def update_flight(scraped_flight_lines: [str]) -> ObjectId:
     new_price_record = parse_price_record(scraped_flight_lines)
     flight_number = get_scraped_flight_number(scraped_flight_lines)
     flight_id = mongo_service.get_flight_by_flight_number(flight_number)
-    add_price_record(flight_id, new_price_record, mongo_service)
+    add_price_record(flight_id, new_price_record)
 
     dict_price_record = mongo_service.find_by_id("price_records",
                                                  mongo_service.get_flight(flight_id)["price_record_ids"][-1])
@@ -54,10 +56,12 @@ def update_flight(scraped_flight_lines: [str], mongo_service: MongoService) -> O
 
     return flight_id
 
-def create_user(email: str, mongo_service: MongoService):
+
+def create_user(email: str):
     user = User(email)
     user_id = mongo_service.save_user(user)
     return user_id
+
 
 def check_for_price_change(old_price_record: dict, new_price_record: PriceRecord) -> bool:
     if old_price_record["price"] == new_price_record.price:

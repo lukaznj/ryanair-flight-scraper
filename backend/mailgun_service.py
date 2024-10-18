@@ -1,9 +1,9 @@
 import os
 
 import requests
-from dotenv import load_dotenv
 
-from custom_types import PriceRecord
+from backend.custom_types import PriceRecord
+
 
 def send_price_change_email(old_price_record: dict, new_price_record: PriceRecord, user_email: str):
     return requests.post(
@@ -13,4 +13,3 @@ def send_price_change_email(old_price_record: dict, new_price_record: PriceRecor
               "to": user_email,
               "subject": "A price change has occurred!",
               "text": f"The price has changed from {old_price_record["price"]} to {new_price_record.price}!"})
-

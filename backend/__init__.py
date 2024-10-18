@@ -1,6 +1,8 @@
 import os
+import sys
+
 from dotenv import load_dotenv
-from .mongo_service import MongoService
+from backend.mongo_service import MongoService
 
 load_dotenv()
 
