@@ -1,11 +1,10 @@
+from backend import mongo_service
 from database_manager import update_flight
-from mongo_service import MongoService
 from scrape_engine import scrape_flights
 
 
-def run(mongo_service: MongoService):
+def run():
     print("Scraping flights...")
-    updated_flights = []
     flight_route_urls = []
     flight_routes_collection = mongo_service.get_collection("flight_routes")
 
@@ -15,6 +14,4 @@ def run(mongo_service: MongoService):
     scraped_flights = scrape_flights(flight_route_urls)
     for scraped_flight in scraped_flights:
         for scraped_flight_lines in scraped_flight:
-            updated_flights.append(update_flight(scraped_flight_lines, mongo_service))
-
-    print("Updated flights: " + str(updated_flights))
+            update_flight(scraped_flight_lines)
