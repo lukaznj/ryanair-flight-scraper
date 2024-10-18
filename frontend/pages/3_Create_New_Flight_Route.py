@@ -1,10 +1,8 @@
-import os
-
-import streamlit as st
 import re
 
+import streamlit as st
+
 from backend.database_manager import create_flight_route
-from backend.mongo_service import MongoService
 
 st.set_page_config(page_title="Track New Flight", page_icon="🌍")
 
@@ -15,8 +13,7 @@ def is_valid_email(email):
 
 
 def handle_create_button_click(url):
-    mongo_service = MongoService(os.getenv("MONGO_URI"), os.getenv("MONGO_DB_NAME"))
-    create_flight_route(url, mongo_service)
+    create_flight_route(url)
 
 
 st.title("Track New Flight")

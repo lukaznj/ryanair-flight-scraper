@@ -4,7 +4,7 @@ from bson import ObjectId
 
 from backend import mongo_service
 from backend.custom_types import CreateFlightRouteRequest, PriceRecord, User
-from backend.mailgun_service import send_price_change_email
+from backend.mailgun_service import check_for_price_change
 from backend.scrape_engine import scrape_flights, parse_price_record, parse_flight, \
     parse_flight_route, get_scraped_flight_number
 
@@ -61,10 +61,3 @@ def create_user(email: str):
     user = User(email)
     user_id = mongo_service.save_user(user)
     return user_id
-
-
-def check_for_price_change(old_price_record: dict, new_price_record: PriceRecord) -> bool:
-    if old_price_record["price"] == new_price_record.price:
-        send_price_change_email(old_price_record, new_price_record)
-        return True
-    return False

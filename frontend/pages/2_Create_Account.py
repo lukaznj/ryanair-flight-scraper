@@ -25,3 +25,4 @@ if button:
         st.error("User with this email already exists.")
     else:
         create_user(email)
+        st.switch_page("pages/3_Create_New_Flight_Route.py")
