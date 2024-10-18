@@ -1,7 +1,9 @@
+from typing import Any
+
 from bson import ObjectId
 from pymongo import MongoClient
 
-from custom_types import FlightRoute, PriceRecord, Flight, User
+from backend.custom_types import PriceRecord, Flight, FlightRoute, User
 
 
 class MongoService:
@@ -12,9 +14,16 @@ class MongoService:
     def get_collection(self, collection_name: str):
         return self.db[collection_name]
 
-    def find_by_id(self, collection_name: str, object_id: ObjectId):
+    def find_by_id(self, collection_name: str, object_id: ObjectId) -> dict:
         collection = self.get_collection(collection_name)
         return collection.find_one({"_id": ObjectId(object_id)})
+
+    def find_user_by_email(self, email: str) -> ObjectId | None:
+        collection = self.get_collection("users")
+        user = collection.find_one({"email": email})
+        if user:
+            return user["_id"]
+        return None
 
     def get_flight_by_flight_number(self, flight_number: str) -> ObjectId:
         collection = self.get_collection("flights")
@@ -47,7 +56,8 @@ class MongoService:
         result = collection.insert_one(serialize_user(user))
         return result.inserted_id
 
-def serialize_price_record(price_record: PriceRecord):
+
+def serialize_price_record(price_record: PriceRecord) -> dict:
     return {
         "price": price_record.price,
         "currency": price_record.currency,
@@ -55,7 +65,7 @@ def serialize_price_record(price_record: PriceRecord):
     }
 
 
-def serialize_flight(flight: Flight):
+def serialize_flight(flight: Flight) -> dict:
     return {
         "flight_number": flight.flight_number,
         "departure_time": flight.departure_time.strftime("%H:%M"),
@@ -64,7 +74,7 @@ def serialize_flight(flight: Flight):
     }
 
 
-def serialize_flight_route(flight_route: FlightRoute):
+def serialize_flight_route(flight_route: FlightRoute) -> dict:
     return {
         "origin": flight_route.origin,
         "destination": flight_route.destination,
@@ -73,7 +83,8 @@ def serialize_flight_route(flight_route: FlightRoute):
         "scrape_url": flight_route.scrape_url
     }
 
-def serialize_user(user: User):
+
+def serialize_user(user: User) -> dict:
     return {
         "email": user.email,
         "tracked_flight_route_ids": user.tracked_flight_route_ids

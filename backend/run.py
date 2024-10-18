@@ -1,6 +1,6 @@
-from database_manager import add_price_record, update_flight
+from database_manager import update_flight
 from mongo_service import MongoService
-from scrape_engine import scrape_flights, get_scraped_flight_number, parse_price_record
+from scrape_engine import scrape_flights
 
 
 def run(mongo_service: MongoService):
