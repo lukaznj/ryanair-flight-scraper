@@ -37,8 +37,16 @@ class CreateFlightRouteRequest:
     destination: str
     date: date
 
+
 @dataclass
 class User:
     email: str
     tracked_flight_route_ids: list[ObjectId] = field(default_factory=list)
     _id: ObjectId = None
+
+
+@dataclass
+class PriceChangeRecord:
+    user_email: str
+    old_price_record: PriceRecord
+    new_price_record: PriceRecord
