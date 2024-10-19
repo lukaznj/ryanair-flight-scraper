@@ -12,6 +12,7 @@ def run():
         flight_route_urls.append(flight_route["scrape_url"])
 
     scraped_flights = scrape_flights(flight_route_urls)
+    
     for scraped_flight in scraped_flights:
         for scraped_flight_lines in scraped_flight:
             update_flight(scraped_flight_lines)

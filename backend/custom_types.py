@@ -23,30 +23,38 @@ class Flight:
 
 @dataclass
 class FlightRoute:
-    origin: str
-    destination: str
-    flight_time: time
-    flight_ids: [ObjectId]
-    scrape_url: str = None
+    origin_code: str
+    destination_code: str
+    date: date
+    scrape_url: str
+    flight_ids: list[ObjectId] = field(default_factory=list)
     _id: ObjectId = None
 
 
 @dataclass
-class CreateFlightRouteRequest:
-    origin: str
-    destination: str
-    date: date
+class FlightRouteCreationRequest:
+    url: str
+    origin_code: str = None
+    destination_code: str = None
+    date: date = None
 
 
 @dataclass
 class User:
+    username: str
     email: str
     tracked_flight_route_ids: list[ObjectId] = field(default_factory=list)
     _id: ObjectId = None
 
 
 @dataclass
-class PriceChangeRecord:
+class PriceChange:
     user_email: str
-    old_price_record: PriceRecord
-    new_price_record: PriceRecord
+    flight_number: str
+    old_price: float
+    new_price: float
+    currency: str
+    origin_code: str
+    destination_code: str
+    departure_time: time
+    arrival_time: time

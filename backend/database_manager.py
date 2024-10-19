@@ -1,28 +1,22 @@
-import sys
-
 from bson import ObjectId
 
 from backend import mongo_service
-from backend.custom_types import CreateFlightRouteRequest, PriceRecord, User
-from backend.mailgun_service import check_for_price_change
+from backend.custom_types import PriceRecord, User, FlightRouteCreationRequest
+from backend.mailgun_service import check_for_price_change, send_price_change_emails, prepare_price_changes
+from backend.mongo_service import deserialize_price_record
 from backend.scrape_engine import scrape_flights, parse_price_record, parse_flight, \
     parse_flight_route, get_scraped_flight_number
 
 
-# def ryanair_url_maker(flight_route_request: CreateFlightRouteRequest) -> str:
-#     # Add logic that uses flight_route_request to create a URL to the Ryanair website to scrape flight data
-#     return "https://www.ryanair.com/hr/en/trip/flights/select?adults=1&teens=0&children=0&infants=0&dateOut=2024-11-01&dateIn=&isConnectedFlight=false&discount=0&promoCode=&isReturn=false&originIata=EIN&destinationIata=STN&tpAdults=1&tpTeens=0&tpChildren=0&tpInfants=0&tpStartDate=2024-11-01&tpEndDate=&tpDiscount=0&tpPromoCode=&tpOriginIata=EIN&tpDestinationIata=STN"
-
-def ryanair_url_maker(url: str) -> str:
-    return url
+def ryanair_url_maker(flight_route_creation_request: FlightRouteCreationRequest) -> str:
+    return flight_route_creation_request.url
 
 
-def create_flight_route(flight_route_request: CreateFlightRouteRequest):
-    url = ryanair_url_maker(flight_route_request)
+def create_flight_route(flight_route_creation_request: FlightRouteCreationRequest):
+    url = ryanair_url_maker(flight_route_creation_request)
     scraped_flights = scrape_flights([url])[0]
 
-    flight_route = parse_flight_route(scraped_flights[0], [])
-    flight_route.scrape_url = url
+    flight_route = parse_flight_route(url)
 
     for scraped_flight_lines in scraped_flights:
         price_record = parse_price_record(scraped_flight_lines)
@@ -48,16 +42,21 @@ def update_flight(scraped_flight_lines: [str]) -> ObjectId:
     new_price_record = parse_price_record(scraped_flight_lines)
     flight_number = get_scraped_flight_number(scraped_flight_lines)
     flight_id = mongo_service.get_flight_by_flight_number(flight_number)
+
+    old_price_record_id = mongo_service.get_flight(flight_id)["price_record_ids"][-1]
+    old_price_record = mongo_service.find_by_id("price_records", old_price_record_id)
+
+    if not check_for_price_change(old_price_record, new_price_record):  # Fixme: CHANGE THIS TO TRUE
+        price_changes = prepare_price_changes(deserialize_price_record(old_price_record), new_price_record,
+                                              flight_id)
+
+        send_price_change_emails(price_changes)
+
     add_price_record(flight_id, new_price_record)
-
-    dict_price_record = mongo_service.find_by_id("price_records",
-                                                 mongo_service.get_flight(flight_id)["price_record_ids"][-1])
-    check_for_price_change(dict_price_record, new_price_record)
-
     return flight_id
 
 
-def create_user(email: str):
-    user = User(email)
+def create_user(username: str, email: str):
+    user = User(username, email)
     user_id = mongo_service.save_user(user)
     return user_id
