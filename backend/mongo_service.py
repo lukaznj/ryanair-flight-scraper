@@ -1,4 +1,4 @@
-from typing import Any
+from datetime import datetime
 
 from bson import ObjectId
 from pymongo import MongoClient
@@ -25,13 +25,29 @@ class MongoService:
             return user["_id"]
         return None
 
+    def find_flight_route_by_scrape_url(self, scrape_url: str) -> ObjectId:
+        collection = self.get_collection("flight_routes")
+        return collection.find_one({"scrape_url": scrape_url})["_id"]
+
+    def find_users_by_tracked_flight_route_id(self, flight_route_id: ObjectId) -> [ObjectId]:
+        collection = self.get_collection("users")
+        return collection.find({"tracked_flight_route_ids": str(flight_route_id)}).to_list()
+
     def get_flight_by_flight_number(self, flight_number: str) -> ObjectId:
         collection = self.get_collection("flights")
         return collection.find_one({"flight_number": flight_number})["_id"]
 
+    def get_flight_route(self, flight_route_id: ObjectId) -> dict:
+        collection = self.get_collection("flight_routes")
+        return collection.find_one({"_id": flight_route_id})
+
     def get_flight(self, flight_id: ObjectId) -> dict:
         collection = self.get_collection("flights")
-        return collection.find_one({"_id": ObjectId(flight_id)})
+        return collection.find_one({"_id": flight_id})
+
+    def get_flight_route_by_flight_id(self, flight_id: ObjectId) -> dict:
+        collection = self.get_collection("flight_routes")
+        return collection.find_one({"flight_ids": flight_id})
 
     def close_connection(self):
         self.client.close()
@@ -56,6 +72,24 @@ class MongoService:
         result = collection.insert_one(serialize_user(user))
         return result.inserted_id
 
+    def delete_flight_route(self, flight_route_id: ObjectId):
+        collection = self.get_collection("flight_routes")
+        flight_route = self.get_flight_route(flight_route_id)
+        for flight_id in flight_route["flight_ids"]:
+            self.delete_flight(flight_id)
+        collection.delete_one({"_id": flight_route_id})
+
+    def delete_flight(self, flight_id: ObjectId):
+        collection = self.get_collection("flights")
+        flight = self.get_flight(flight_id)
+        for price_record_id in flight["price_record_ids"]:
+            self.delete_price_record(price_record_id)
+        collection.delete_one({"_id": flight_id})
+
+    def delete_price_record(self, price_record_id: ObjectId):
+        collection = self.get_collection("price_records")
+        collection.delete_one({"_id": price_record_id})
+
 
 def serialize_price_record(price_record: PriceRecord) -> dict:
     return {
@@ -63,6 +97,14 @@ def serialize_price_record(price_record: PriceRecord) -> dict:
         "currency": price_record.currency,
         "date_time": price_record.date_time.strftime("%Y-%m-%d %H:%M:%S")
     }
+
+
+def deserialize_price_record(price_record: dict) -> PriceRecord:
+    return PriceRecord(
+        price=price_record["price"],
+        currency=price_record["currency"],
+        date_time=datetime.strptime(price_record["date_time"], "%Y-%m-%d %H:%M:%S")
+    )
 
 
 def serialize_flight(flight: Flight) -> dict:
@@ -76,16 +118,17 @@ def serialize_flight(flight: Flight) -> dict:
 
 def serialize_flight_route(flight_route: FlightRoute) -> dict:
     return {
-        "origin": flight_route.origin,
-        "destination": flight_route.destination,
-        "flight_time": flight_route.flight_time.strftime("%Hh %Mm"),
-        "flight_ids": flight_route.flight_ids,
-        "scrape_url": flight_route.scrape_url
+        "origin_code": flight_route.origin_code,
+        "destination_code": flight_route.destination_code,
+        "date": flight_route.date.strftime("%Y-%m-%d"),
+        "scrape_url": flight_route.scrape_url,
+        "flight_ids": flight_route.flight_ids
     }
 
 
 def serialize_user(user: User) -> dict:
     return {
+        "username": user.username,
         "email": user.email,
         "tracked_flight_route_ids": user.tracked_flight_route_ids
     }

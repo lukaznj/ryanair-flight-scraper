@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import datetime, time
+from urllib.parse import urlparse, parse_qs
 
 from bson import ObjectId
 from selenium import webdriver
@@ -10,48 +11,62 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
+from backend import mongo_service
 from backend.custom_types import FlightRoute, Flight, PriceRecord
 
 FLIGHT_LIST_XPATH = "/html/body/app-root/flights-root/div/div/div/div/flights-lazy-content/flights-summary-container/flights-summary/div/div[1]/journey-container/journey/flight-list/ry-spinner/div/flight-card-new"
 
 
-def scrape_flights(urls: [str]) -> [[str]]:
+def scrape_flights(scrape_urls: [str]) -> [[str]]:
     service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH"))
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
     driver = webdriver.Chrome(service=service, options=options)
 
-    to_return = []
+    scraped_flights = []
 
-    try:
-        for url in urls:
-            driver.get(url)
+    for scrape_url in scrape_urls:
+        try:
+            driver.get(scrape_url)
 
             elements = WebDriverWait(driver, float(os.getenv("WEBDRIVER_TIMEOUT"))).until(
                 ec.presence_of_all_elements_located((By.XPATH, FLIGHT_LIST_XPATH))
             )
 
-            to_return.append([remove_unnecessary_data(element.text.split("\n")) for element in elements])
+            scraped_flights.append([remove_unnecessary_data(element.text.split("\n")) for element in elements])
 
-        return to_return
+        except TimeoutException as exception:
+            logging.error(
+                "Could not find the specified element with XPath.\nDeleting the probably no longer existent flight route.\nLink: %s",
+                scrape_url, exc_info=exception)
+            # handle_flight_not_found(scrape_url) FIXME: Implement this so it takes admin input
 
-    except TimeoutException as exception:
-        logging.error("Could not find the specified element with XPath: %s", FLIGHT_LIST_XPATH, exc_info=exception)
+    driver.quit()
+    return scraped_flights
 
-    finally:
-        driver.quit()
+
+def handle_flight_not_found(scrape_url: str):
+    flight_route_id = mongo_service.find_flight_route_by_scrape_url(scrape_url)
+    mongo_service.delete_flight_route(flight_route_id)
 
 
 def get_scraped_flight_number(scraped_flight_lines: [str]):
     return scraped_flight_lines[2]
 
 
-def parse_flight_route(scraped_flight_lines: [str], flight_ids: [ObjectId]) -> FlightRoute:
+def parse_flight_route(scrape_url: str) -> FlightRoute:
+    parsed_url = urlparse(scrape_url)
+    query_params = parse_qs(parsed_url.query)
+
+    origin_code = query_params.get("originMac", [None])[0]
+    destination_code = query_params.get("destinationMac", [None])[0]
+    date = query_params.get("dateOut", [None])[0]
+
     return FlightRoute(
-        origin=scraped_flight_lines[1],
-        destination=scraped_flight_lines[5],
-        flight_time=parse_flight_time(scraped_flight_lines[3]),
-        flight_ids=flight_ids
+        origin_code=origin_code,
+        destination_code=destination_code,
+        date=datetime.strptime(date, "%Y-%m-%d").date(),
+        scrape_url=scrape_url
     )
 
 
