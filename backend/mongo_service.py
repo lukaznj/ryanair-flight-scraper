@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 from bson import ObjectId
@@ -14,9 +15,16 @@ class MongoService:
     def get_collection(self, collection_name: str):
         return self.db[collection_name]
 
+    def get_tracked_flight_routes(self) -> [ObjectId]:
+        collection = self.get_collection("system_data")
+        tracked_flight_routes_ids = \
+        collection.find_one({"_id": ObjectId(os.getenv("MONGO_TRACKED_FLIGHT_ROUTES_DOC_ID"))})[
+            "tracked_flight_routes"]
+        return [ObjectId(tracked_flight_route_id) for tracked_flight_route_id in tracked_flight_routes_ids]
+
     def find_by_id(self, collection_name: str, object_id: ObjectId) -> dict:
         collection = self.get_collection(collection_name)
-        return collection.find_one({"_id": ObjectId(object_id)})
+        return collection.find_one({"_id": object_id})
 
     def find_user_by_email(self, email: str) -> ObjectId | None:
         collection = self.get_collection("users")
@@ -136,5 +144,5 @@ def serialize_user(user: User) -> dict:
     return {
         "name": user.name,
         "email": user.email,
-        "tracked_flight_route_ids": user.tracked_flight_route_ids
+        "followed_flight_route_ids": user.followed_flight_route_ids
     }
