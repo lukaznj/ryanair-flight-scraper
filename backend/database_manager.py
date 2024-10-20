@@ -12,7 +12,7 @@ def ryanair_url_maker(flight_route_creation_request: FlightRouteCreationRequest)
     return flight_route_creation_request.url
 
 
-def create_flight_route(flight_route_creation_request: FlightRouteCreationRequest):
+def create_flight_route(flight_route_creation_request: FlightRouteCreationRequest) -> ObjectId:
     url = ryanair_url_maker(flight_route_creation_request)
     scraped_flights = scrape_flights([url])[0]
 
@@ -27,7 +27,7 @@ def create_flight_route(flight_route_creation_request: FlightRouteCreationReques
 
         flight_route.flight_ids.append(flight_id)
 
-    mongo_service.save_flight_route(flight_route)
+    return mongo_service.save_flight_route(flight_route)
 
 
 def add_price_record(flight_id: ObjectId, price_record: PriceRecord) -> ObjectId:
@@ -56,7 +56,7 @@ def update_flight(scraped_flight_lines: [str]) -> ObjectId:
     return flight_id
 
 
-def create_user(username: str, email: str):
-    user = User(username, email)
+def create_user(name: str, email: str):
+    user = User(name, email)
     user_id = mongo_service.save_user(user)
     return user_id

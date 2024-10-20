@@ -14,15 +14,17 @@ st.set_page_config(page_title="Register", page_icon="🔒")
 
 st.title("Create an Account")
 
+name = st.text_input("Name", placeholder="Enter your name")
+
 email = st.text_input("Email", placeholder="Enter your email")
 
-button = st.button("Register")
+register_button = st.button("Register")
 
-if button:
+if register_button:
     if not is_valid_email(email):
         st.error("Please enter a valid email address.")
     elif user_exists(email):
         st.error("User with this email already exists.")
     else:
-        create_user(email)
+        st.session_state.user_id = create_user(name, email)
         st.switch_page("pages/3_Create_New_Flight_Route.py")

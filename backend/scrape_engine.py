@@ -58,8 +58,8 @@ def parse_flight_route(scrape_url: str) -> FlightRoute:
     parsed_url = urlparse(scrape_url)
     query_params = parse_qs(parsed_url.query)
 
-    origin_code = query_params.get("originMac", [None])[0]
-    destination_code = query_params.get("destinationMac", [None])[0]
+    origin_code = query_params.get("originIata", [None])[0]
+    destination_code = query_params.get("destinationIata", [None])[0]
     date = query_params.get("dateOut", [None])[0]
 
     return FlightRoute(
