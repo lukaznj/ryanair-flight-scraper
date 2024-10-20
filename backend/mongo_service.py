@@ -27,7 +27,9 @@ class MongoService:
 
     def find_flight_route_by_scrape_url(self, scrape_url: str) -> ObjectId:
         collection = self.get_collection("flight_routes")
-        return collection.find_one({"scrape_url": scrape_url})["_id"]
+        flight_route = collection.find_one({"scrape_url": scrape_url})
+        if flight_route:
+            return flight_route["_id"]
 
     def find_users_by_tracked_flight_route_id(self, flight_route_id: ObjectId) -> [ObjectId]:
         collection = self.get_collection("users")
@@ -71,6 +73,10 @@ class MongoService:
         collection = self.get_collection("users")
         result = collection.insert_one(serialize_user(user))
         return result.inserted_id
+
+    def add_flight_route_to_user(self, user_id: ObjectId, flight_route_id: ObjectId):
+        collection = self.get_collection("users")
+        collection.update_one({"_id": user_id}, {"$push": {"tracked_flight_route_ids": flight_route_id}})
 
     def delete_flight_route(self, flight_route_id: ObjectId):
         collection = self.get_collection("flight_routes")
@@ -128,7 +134,7 @@ def serialize_flight_route(flight_route: FlightRoute) -> dict:
 
 def serialize_user(user: User) -> dict:
     return {
-        "username": user.username,
+        "name": user.name,
         "email": user.email,
         "tracked_flight_route_ids": user.tracked_flight_route_ids
     }

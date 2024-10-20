@@ -41,7 +41,7 @@ class FlightRouteCreationRequest:
 
 @dataclass
 class User:
-    username: str
+    name: str
     email: str
     tracked_flight_route_ids: list[ObjectId] = field(default_factory=list)
     _id: ObjectId = None
