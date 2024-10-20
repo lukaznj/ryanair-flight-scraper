@@ -18,8 +18,8 @@ class MongoService:
     def get_tracked_flight_routes(self) -> [ObjectId]:
         collection = self.get_collection("system_data")
         tracked_flight_routes_ids = \
-        collection.find_one({"_id": ObjectId(os.getenv("MONGO_TRACKED_FLIGHT_ROUTES_DOC_ID"))})[
-            "tracked_flight_routes"]
+            collection.find_one({"_id": ObjectId(os.getenv("MONGO_TRACKED_FLIGHT_ROUTES_DOC_ID"))})[
+                "tracked_flight_routes"]
         return [ObjectId(tracked_flight_route_id) for tracked_flight_route_id in tracked_flight_routes_ids]
 
     def find_by_id(self, collection_name: str, object_id: ObjectId) -> dict:
@@ -41,7 +41,7 @@ class MongoService:
 
     def find_users_by_tracked_flight_route_id(self, flight_route_id: ObjectId) -> [ObjectId]:
         collection = self.get_collection("users")
-        return collection.find({"tracked_flight_route_ids": str(flight_route_id)}).to_list()
+        return collection.find({"followed_flight_route_ids": str(flight_route_id)}).to_list()
 
     def get_flight_by_flight_number(self, flight_number: str) -> ObjectId:
         collection = self.get_collection("flights")
@@ -51,13 +51,17 @@ class MongoService:
         collection = self.get_collection("flight_routes")
         return collection.find_one({"_id": flight_route_id})
 
+    def get_flight_route_by_flight_id(self, flight_id: ObjectId) -> dict:
+        collection = self.get_collection("flight_routes")
+        return collection.find_one({"flight_ids": flight_id})
+
     def get_flight(self, flight_id: ObjectId) -> dict:
         collection = self.get_collection("flights")
         return collection.find_one({"_id": flight_id})
 
-    def get_flight_route_by_flight_id(self, flight_id: ObjectId) -> dict:
-        collection = self.get_collection("flight_routes")
-        return collection.find_one({"flight_ids": flight_id})
+    def get_user(self, user_id: ObjectId) -> dict:
+        collection = self.get_collection("users")
+        return collection.find_one({"_id": user_id})
 
     def close_connection(self):
         self.client.close()
@@ -84,7 +88,7 @@ class MongoService:
 
     def add_flight_route_to_user(self, user_id: ObjectId, flight_route_id: ObjectId):
         collection = self.get_collection("users")
-        collection.update_one({"_id": user_id}, {"$push": {"tracked_flight_route_ids": flight_route_id}})
+        collection.update_one({"_id": user_id}, {"$push": {"followed_flight_route_ids": flight_route_id}})
 
     def delete_flight_route(self, flight_route_id: ObjectId):
         collection = self.get_collection("flight_routes")

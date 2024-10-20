@@ -11,5 +11,4 @@ email = st.text_input("Email", placeholder="Enter your email")
 login_button = st.button("Login")
 
 if login_button:
-    st.session_state['email'] = email
-    user = User(email)
+    print("CAO MAJO")

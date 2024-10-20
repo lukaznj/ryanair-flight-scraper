@@ -2,7 +2,7 @@ import re
 
 import streamlit as st
 
-from backend.users_service import user_create_flight_route
+from backend.users_service import user_create_flight_route, user_already_tracking_flight
 
 st.set_page_config(page_title="Track New Flight", page_icon="🌍")
 
@@ -23,5 +23,7 @@ scrape_url = st.text_input("Enter the URL to the Ryanair website for the route y
 if st.button("Start Tracking"):
     if st.session_state.user_id is None:
         st.error("Please log in to start tracking a flight.")
+    elif user_already_tracking_flight(scrape_url, st.session_state.user_id):
+        st.error("You are already tracking this flight.")
     else:
         handle_create_button_click(scrape_url)
