@@ -3,7 +3,7 @@ from bson import ObjectId
 from backend import mongo_service
 from backend.custom_types import PriceRecord, User, FlightRouteCreationRequest
 from backend.mailgun_service import check_for_price_change, send_price_change_emails, prepare_price_changes
-from backend.mongo_service import deserialize_price_record
+from backend.mongo_service import deserialize_price_record, serialize_flight_route
 from backend.scrape_engine import scrape_flights, parse_price_record, parse_flight, \
     parse_flight_route, get_scraped_flight_number
 

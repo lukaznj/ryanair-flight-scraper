@@ -27,4 +27,4 @@ if register_button:
         st.error("User with this email already exists.")
     else:
         st.session_state.user_id = create_user(name, email)
-        st.switch_page("pages/3_Create_New_Flight_Route.py")
+        st.switch_page("pages/3_Track_New_Flight_Route.py")

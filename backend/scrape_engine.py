@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from datetime import datetime, time
 from urllib.parse import urlparse, parse_qs
 
@@ -81,9 +82,16 @@ def parse_flight(scraped_flight_lines: [str], price_record_ids: [ObjectId]) -> F
 
 
 def parse_price_record(scraped_flight_lines: [str]) -> PriceRecord:
+    price_line = scraped_flight_lines[6]
+    match = re.match(r"([^\d]+)([\d,]+\.\d+)", price_line)
+    if match:
+        currency = match.group(1)
+        price = float(match.group(2).replace(",", ""))
+    else:
+        raise ValueError(f"Price line format is incorrect: {price_line}")
     return PriceRecord(
-        price=float(scraped_flight_lines[6][1:]),
-        currency=scraped_flight_lines[6][0],
+        price=price,
+        currency=currency,
         date_time=datetime.now()
     )
 
