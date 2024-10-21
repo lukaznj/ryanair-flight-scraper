@@ -49,6 +49,7 @@ class User:
 
 @dataclass
 class PriceChange:
+    user_name: str
     user_email: str
     flight_number: str
     old_price: float
@@ -56,5 +57,6 @@ class PriceChange:
     currency: str
     origin_code: str
     destination_code: str
+    departure_date: date
     departure_time: time
     arrival_time: time

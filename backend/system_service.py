@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from bson import ObjectId
 
 from backend import mongo_service
+from backend.custom_types import PriceRecord
 
 
 def stop_tracking_flight_route(flight_route_id: ObjectId):
@@ -19,3 +20,9 @@ def check_flight_route_deprecated(flight_route_id: ObjectId) -> bool:
     if date <= (datetime.now().date() - timedelta(days=1)):
         stop_tracking_flight_route(flight_route_id)
         return True
+
+
+def check_for_price_change(old_price_record: dict, new_price_record: PriceRecord) -> bool:
+    if old_price_record["price"] != new_price_record.price:
+        return True
+    return False
