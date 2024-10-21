@@ -2,10 +2,12 @@ from bson import ObjectId
 
 from backend import mongo_service
 from backend.custom_types import PriceRecord, User, FlightRouteCreationRequest
-from backend.mailgun_service import check_for_price_change, send_price_change_emails, prepare_price_changes
-from backend.mongo_service import deserialize_price_record, serialize_flight_route
+from backend.email_maker import prepare_price_changes
+from backend.mailgun_service import send_price_change_emails
+from backend.mongo_service import deserialize_price_record
 from backend.scrape_engine import scrape_flights, parse_price_record, parse_flight, \
     parse_flight_route, get_scraped_flight_number
+from backend.system_service import check_for_price_change
 
 
 def ryanair_url_maker(flight_route_creation_request: FlightRouteCreationRequest) -> str:
@@ -46,7 +48,7 @@ def update_flight(scraped_flight_lines: [str]) -> ObjectId:
     old_price_record_id = mongo_service.get_flight(flight_id)["price_record_ids"][-1]
     old_price_record = mongo_service.find_by_id("price_records", old_price_record_id)
 
-    if not check_for_price_change(old_price_record, new_price_record):  # Fixme: CHANGE THIS TO TRUE
+    if check_for_price_change(old_price_record, new_price_record):
         price_changes = prepare_price_changes(deserialize_price_record(old_price_record), new_price_record,
                                               flight_id)
 
