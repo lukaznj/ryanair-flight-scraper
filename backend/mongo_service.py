@@ -148,6 +148,5 @@ def serialize_user(user: User) -> dict:
     return {
         "name": user.name,
         "email": user.email,
-        "password": user.password,
         "followed_flight_route_ids": user.followed_flight_route_ids
     }

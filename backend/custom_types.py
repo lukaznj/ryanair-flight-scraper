@@ -43,7 +43,6 @@ class FlightRouteCreationRequest:
 class User:
     name: str
     email: str
-    password: str
     followed_flight_route_ids: list[ObjectId] = field(default_factory=list)
     _id: ObjectId = None
 
