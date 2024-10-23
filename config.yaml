@@ -1,0 +1,33 @@
+cookie:
+  expiry_days: 30
+  key: 3dawda21312
+  name: flight_scraper_session
+credentials:
+  usernames:
+    bratmoj@mail.com:
+      email: bratmoj@mail.com
+      failed_login_attempts: 0
+      first_name: Liza
+      last_name: Xb
+      logged_in: true
+      password: $2b$12$zJ4LY1ZvdNwFksa.4kidLuocZvCT/JdcgnmMySEo9WZV67Xy8IK8W
+      password_hint: '123'
+      roles: null
+    elizabeth.bulavina24@gmail.com:
+      email: elizabeth.bulavina24@gmail.com
+      first_name: Elizaveta
+      last_name: Bulavina
+      logged_in: false
+      password: $2b$12$/oeZW1CFCgsGyz3IleMmwOiHge8k.QWUmh7kHUmGnPROwW0vBx37q
+      password_hint: abc
+      roles: null
+    jsmith:
+      email: jsmith@gmail.com
+      failed_login_attempts: 0
+      logged_in: true
+      name: John Smith
+      password: $2b$12$DN3/NyDRjn35kBmk2VjysOCNf5zuBfs4zvqjA3ZDq/86UnX1TPA92
+    rbriggs:
+      email: rbriggs@gmail.com
+      name: Rebecca Briggs
+      password: $2b$12$6a/9/ABkGQz4oy2AUvEk2uMwIbQRfL/w5zzeAAmN9hv1ZTDgKKhXW
