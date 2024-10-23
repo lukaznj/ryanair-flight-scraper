@@ -21,13 +21,38 @@ credentials:
       password: $2b$12$/oeZW1CFCgsGyz3IleMmwOiHge8k.QWUmh7kHUmGnPROwW0vBx37q
       password_hint: abc
       roles: null
+    email@email.com:
+      email: email@email.com
+      first_name: MALI
+      last_name: PARADAJZ
+      logged_in: false
+      password: $2b$12$8bWRRvDUiVtpy1f7GJ4sMu9mKqauwb/2zLxVHwEghqyWc4Blk9Opy
+      password_hint: '321'
+      roles: null
+    emaila@email.com:
+      email: emaila@email.com
+      first_name: MALI
+      last_name: PARADAJZ
+      logged_in: false
+      password: $2b$12$iIkAdximHb.LCn8Pq6Y0v.DyCbGs8J2x9BI.xcjoNudEZpJBrZZmO
+      password_hint: '321'
+      roles: null
     jsmith:
       email: jsmith@gmail.com
       failed_login_attempts: 0
-      logged_in: true
+      logged_in: false
       name: John Smith
       password: $2b$12$DN3/NyDRjn35kBmk2VjysOCNf5zuBfs4zvqjA3ZDq/86UnX1TPA92
     rbriggs:
       email: rbriggs@gmail.com
       name: Rebecca Briggs
       password: $2b$12$6a/9/ABkGQz4oy2AUvEk2uMwIbQRfL/w5zzeAAmN9hv1ZTDgKKhXW
+    uwu@uwu.com:
+      email: uwu@uwu.com
+      failed_login_attempts: 2
+      first_name: O NA NA E
+      last_name: O NA NA E
+      logged_in: false
+      password: $2b$12$pW6MB2WT/av20cnKnz.zQOvRB5kjT9bObYmWgtPoY/AJA6wI3wC8y
+      password_hint: no hint
+      roles: null
