@@ -13,7 +13,7 @@ LOGO_FULL_PATH = "../resources/images/logo_full.png"
 st.logo(image=LOGO_FULL_PATH, icon_image=LOGO_CIRCLE_PATH, size="large")
 
 st.markdown(
-    " <style> div[class^='stMainBlockContainer block-container'] { padding-top: 1rem; } </style> ",
+    " <style> div[class^='stMainBlockContainer block-container'] { padding-top: 1rem; } [data-testid='stHeaderActionElements'] {display: none;} </style> ",
     unsafe_allow_html=True)
 
 if "authentication_status" not in ss:
