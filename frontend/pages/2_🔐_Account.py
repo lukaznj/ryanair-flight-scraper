@@ -16,15 +16,22 @@ LOGO_FULL_PATH = "../resources/images/logo_full.png"
 st.logo(image=LOGO_FULL_PATH, icon_image=LOGO_CIRCLE_PATH, size="large")
 
 st.markdown(
-    " <style> div[class^='stMainBlockContainer block-container'] { padding-top: 1rem; } </style> ",
+    " <style> div[class^='stMainBlockContainer block-container'] { padding-top: 1rem; } [data-testid='stHeaderActionElements'] {display: none;}</style> ",
     unsafe_allow_html=True)
+
+
+def handle_register_user(user):
+    create_user(user["new_name"], user["new_email"])
+    st.switch_page("🏠_Home.py")
+
+
 st.title("Account")
 st.session_state.authenticator = stauth.Authenticate(CONFIG_PATH)
 
 if st.session_state["authentication_status"]:
     st.subheader("You are logged in.")
     ss.authenticator.logout(callback=lambda _: st.rerun())
-    
+
 else:
     login_tab, register_tab = st.tabs(["Login", "Register"])
 
@@ -43,8 +50,7 @@ else:
 
     with register_tab:
         try:
-            email, username, name = ss.authenticator.register_user(location="main", merge_username_email=True,
-                                                                   callback=lambda _: st.switch_page("🏠_Home.py"))
-            create_user(name, email)
+            ss.authenticator.register_user(location="main", merge_username_email=True,
+                                           callback=handle_register_user)
         except RegisterError as e:
             st.error(e)

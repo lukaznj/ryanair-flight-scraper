@@ -4,55 +4,96 @@ cookie:
   name: flight_scraper_session
 credentials:
   usernames:
-    bratmoj@mail.com:
-      email: bratmoj@mail.com
-      failed_login_attempts: 0
-      first_name: Liza
-      last_name: Xb
-      logged_in: true
-      password: $2b$12$zJ4LY1ZvdNwFksa.4kidLuocZvCT/JdcgnmMySEo9WZV67Xy8IK8W
+    ab@ab.ab:
+      email: ab@ab.ab
+      first_name: awd
+      last_name: dwa
+      logged_in: false
+      password: $2b$12$8sTlowAZGrz04Dr3xTfACOOaoIzpBFvAhHfncv.BsnsMhjQudGvYW
       password_hint: '123'
       roles: null
-    elizabeth.bulavina24@gmail.com:
-      email: elizabeth.bulavina24@gmail.com
-      first_name: Elizaveta
-      last_name: Bulavina
+    ab@ab.abc:
+      email: ab@ab.abc
+      first_name: awd
+      last_name: dwa
       logged_in: false
-      password: $2b$12$/oeZW1CFCgsGyz3IleMmwOiHge8k.QWUmh7kHUmGnPROwW0vBx37q
-      password_hint: abc
+      password: $2b$12$337I5Oh4UD2XjxD1E6geR.17IOOnfTLheFIgtV4bf125KuCQa4O2C
+      password_hint: '123'
       roles: null
-    email@email.com:
-      email: email@email.com
-      first_name: MALI
-      last_name: PARADAJZ
+    abc@abc.abc:
+      email: abc@abc.abc
+      first_name: dwadaw
+      last_name: adwawd
       logged_in: false
-      password: $2b$12$8bWRRvDUiVtpy1f7GJ4sMu9mKqauwb/2zLxVHwEghqyWc4Blk9Opy
-      password_hint: '321'
+      password: $2b$12$GxxJn3p68b2RQuWOU9vxMOwztXvO9Jr1ilWpc1Q.OrofWYaSP8PHS
+      password_hint: '1231'
       roles: null
-    emaila@email.com:
-      email: emaila@email.com
-      first_name: MALI
-      last_name: PARADAJZ
+    abc@abc.abca:
+      email: abc@abc.abca
+      first_name: dwadaw
+      last_name: adwawd
       logged_in: false
-      password: $2b$12$iIkAdximHb.LCn8Pq6Y0v.DyCbGs8J2x9BI.xcjoNudEZpJBrZZmO
-      password_hint: '321'
+      password: $2b$12$GluVOpIpu7JsevqsvLAr2uG3ATiTiHmn2VX743zF2zgePeHqmGKaO
+      password_hint: '1231'
       roles: null
-    jsmith:
-      email: jsmith@gmail.com
+    bakica123@gmail.com:
+      email: bakica123@gmail.com
+      first_name: Luka
+      last_name: bona
+      logged_in: false
+      password: $2b$12$UXaqAC/yC6UNion9AkLQcuBMjZwir4rDBekgRy5nDIZqrV/REgTV6
+      password_hint: '123'
+      roles: null
+    hpt@hpt.com:
+      email: hpt@hpt.com
+      first_name: dwa
+      last_name: daw
+      logged_in: false
+      password: $2b$12$Aouyj3K02wXhOnOw7j5qd.BAGnCkNb.0cA4la8z7Bo.NIquUmYQkm
+      password_hint: '231'
+      roles: null
+    izvimubaski@serbian.abca:
+      email: IZVIMUBASKI@serbian.abca
       failed_login_attempts: 0
+      first_name: J NISAM
+      last_name: MALI PARADAJZ
       logged_in: false
+      password: $2b$12$t1186w4Wh8iPTmowbAcofeuJo44b6dwBsrS5wdi355A6LdRCMffnC
+      password_hint: '1231'
+      roles: null
+    izvimubaskiabc@abc.abca:
+      email: IZVIMUBASKIabc@abc.abca
+      first_name: JA SAM
+      last_name: MALI PARADAJZ
+      logged_in: false
+      password: $2b$12$/NHl9FnIiYnwmrf0Mh5ncumekCu2WGc3xp1FnHIt9uOJo5rqT8/E2
+      password_hint: '1231'
+      roles: null
+    jsmith@gmail.com:
+      email: jsmith@gmail.com
       name: John Smith
-      password: $2b$12$DN3/NyDRjn35kBmk2VjysOCNf5zuBfs4zvqjA3ZDq/86UnX1TPA92
-    rbriggs:
-      email: rbriggs@gmail.com
-      name: Rebecca Briggs
-      password: $2b$12$6a/9/ABkGQz4oy2AUvEk2uMwIbQRfL/w5zzeAAmN9hv1ZTDgKKhXW
-    uwu@uwu.com:
-      email: uwu@uwu.com
-      failed_login_attempts: 2
-      first_name: O NA NA E
-      last_name: O NA NA E
+      password: $2b$12$csTcEjfiskv5QmUdPHVaH.wxjsCnncnjuw3VM7s4V.XsK.ubOECRG
+    luka.razem@gmail.com:
+      email: luka.razem@gmail.com
+      first_name: Luka
+      last_name: Razem
       logged_in: false
-      password: $2b$12$pW6MB2WT/av20cnKnz.zQOvRB5kjT9bObYmWgtPoY/AJA6wI3wC8y
-      password_hint: no hint
+      password: $2b$12$WxtylhfMdnM4uUImvOHxM.YMAspKDCCRianKKnZAazWzJ0EL7fkRW
+      password_hint: '213'
+      roles: null
+    luka.razema@gmail.com:
+      email: luka.razema@gmail.com
+      first_name: Luka
+      last_name: Razem
+      logged_in: false
+      password: $2b$12$4aYkgNmF3Jc7eNamKHnaB.WMBpxtHEbypm6SqzwfAbV0tY1XFmvAa
+      password_hint: '213'
+      roles: null
+    razemluka@gmail.com:
+      email: razemluka@gmail.com
+      first_name: Luka
+      last_name: Razem
+      logged_in: false
+      password: $2b$12$R106oQ.7pdixiCdwjRocSOzcdnjSHvPxx4/vZKM4V3z7.Rwf0atWi
+      password_hint: '3123'
       roles: null

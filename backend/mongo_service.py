@@ -22,6 +22,23 @@ class MongoService:
                 "tracked_flight_routes"]
         return [ObjectId(tracked_flight_route_id) for tracked_flight_route_id in tracked_flight_routes_ids]
 
+    def get_user_tracked_flight_routes(self, user_id: ObjectId) -> [ObjectId]:
+        collection = self.get_collection("users")
+        user = collection.find_one({"_id": user_id})
+        return user["followed_flight_route_ids"]
+
+    def get_flight_price_records(self, flight_id: ObjectId) -> [dict]:
+        collection = self.get_collection("flights")
+        flight = collection.find_one({"_id": flight_id})
+        price_records = self.get_collection("price_records").find({"_id": {"$in": flight["price_record_ids"]}})
+        return price_records.to_list()
+
+    def get_flight_route_flights(self, flight_route_id: ObjectId) -> [dict]:
+        collection = self.get_collection("flight_routes")
+        flight_route = collection.find_one({"_id": flight_route_id})
+        flights = self.get_collection("flights").find({"_id": {"$in": flight_route["flight_ids"]}})
+        return flights.to_list()
+
     def find_by_id(self, collection_name: str, object_id: ObjectId) -> dict:
         collection = self.get_collection(collection_name)
         return collection.find_one({"_id": object_id})
@@ -50,6 +67,10 @@ class MongoService:
     def get_flight_route(self, flight_route_id: ObjectId) -> dict:
         collection = self.get_collection("flight_routes")
         return collection.find_one({"_id": flight_route_id})
+
+    def get_flight_routes(self, flight_route_ids: [ObjectId]) -> [dict]:
+        collection = self.get_collection("flight_routes")
+        return collection.find({"_id": {"$in": flight_route_ids}}).to_list()
 
     def get_flight_route_by_flight_id(self, flight_id: ObjectId) -> dict:
         collection = self.get_collection("flight_routes")
@@ -117,11 +138,34 @@ def serialize_price_record(price_record: PriceRecord) -> dict:
     }
 
 
-def deserialize_price_record(price_record: dict) -> PriceRecord:
+def deserialize_price_record(price_record: dict) -> [PriceRecord]:
     return PriceRecord(
+        _id=price_record["_id"],
         price=price_record["price"],
         currency=price_record["currency"],
         date_time=datetime.strptime(price_record["date_time"], "%Y-%m-%d %H:%M:%S")
+    )
+
+
+# noinspection PyTypeChecker
+def deserialize_flight(flight: dict) -> [Flight]:
+    return Flight(
+        _id=flight["_id"],
+        flight_number=flight["flight_number"],
+        departure_time=datetime.strptime(flight["departure_time"], "%H:%M"),
+        arrival_time=datetime.strptime(flight["arrival_time"], "%H:%M"),
+        price_record_ids=flight["price_record_ids"]
+    )
+
+
+def deserialize_flight_route(flight_route: dict) -> [FlightRoute]:
+    return FlightRoute(
+        _id=flight_route["_id"],
+        origin_code=flight_route["origin_code"],
+        destination_code=flight_route["destination_code"],
+        date=datetime.strptime(flight_route["date"], "%Y-%m-%d"),
+        scrape_url=flight_route["scrape_url"],
+        flight_ids=flight_route["flight_ids"]
     )
 
 
