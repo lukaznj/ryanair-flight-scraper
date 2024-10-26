@@ -1,0 +1,31 @@
+services:
+  python-app:
+    build: .
+    container_name: python-app
+    env_file:
+      - .env
+    ports:
+      - "8501:8501"
+      - "80:80"
+    volumes:
+      - config-volume:/app/config
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+  config-volume:

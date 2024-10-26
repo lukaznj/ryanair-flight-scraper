@@ -1,0 +1,5 @@
+.venv
+.env
+.gitignore
+config/config.yaml.example
+**/__pycache__/

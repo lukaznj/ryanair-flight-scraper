@@ -1,0 +1,7 @@
+credentials:
+  usernames:
+
+cookie:
+  expiry_days: 30
+  key: enter_your_random_key_here
+  name: flight_scraper_session
