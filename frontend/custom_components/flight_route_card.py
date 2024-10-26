@@ -2,11 +2,12 @@ from backend import mongo_service
 from backend.airport_search import get_airport_by_code
 from backend.custom_types import FlightRoute
 import streamlit as st
+import os
 
 from backend.mongo_service import deserialize_flight
 from frontend.custom_components.price_graphs_dialog import price_graphs_dialog
 
-ICON_PLANE_PATH = "../resources/images/icon_plane.svg"
+ICON_PLANE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../resources/images/icon_plane.svg"))
 
 HIDE_IMG_FS = '''
         <style>

@@ -13,6 +13,7 @@ def create_chart_data(price_records: [PriceRecord]) -> pd.DataFrame:
         "Date": [price_record.date_time for price_record in price_records],
         f"Price ({price_records[0].currency})": [price_record.price for price_record in price_records]
     }
+    print(data)
     return pd.DataFrame(data)
 
 

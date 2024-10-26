@@ -1,17 +1,19 @@
 import streamlit as st
 
+import os
 import streamlit_authenticator as stauth
 from streamlit import session_state as ss
 from streamlit_authenticator import RegisterError, LoginError
 
 from backend.database_manager import create_user
 
-CONFIG_PATH = "../config.yaml"
+CONFIG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../config/config.yaml'))
+
 
 st.set_page_config(page_title="Account", page_icon="🔐")
 
-LOGO_CIRCLE_PATH = "../resources/images/logo_circle.png"
-LOGO_FULL_PATH = "../resources/images/logo_full.png"
+LOGO_CIRCLE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../resources/images/logo_circle.png'))
+LOGO_FULL_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../resources/images/logo_full.png'))
 
 st.logo(image=LOGO_FULL_PATH, icon_image=LOGO_CIRCLE_PATH, size="large")
 
