@@ -1,7 +1,7 @@
 from backend import mongo_service
 from backend.system_service import check_flight_route_deprecated
-from database_manager import update_flight
-from scrape_engine import scrape_flights
+from backend.database_manager import update_flight
+from backend.scrape_engine import scrape_flights
 
 
 def run():

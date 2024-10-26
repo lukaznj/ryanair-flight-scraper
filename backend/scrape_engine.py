@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import time as t
 from datetime import datetime, time
 from urllib.parse import urlparse, parse_qs
 
@@ -14,15 +15,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from backend import mongo_service
 from backend.custom_types import FlightRoute, Flight, PriceRecord
+from backend.system_service import stop_tracking_flight_route
 
 FLIGHT_LIST_XPATH = ("/html/body/app-root/flights-root/div/div/div/div/flights-lazy-content/flights-summary-container/"
                      "flights-summary/div/div[1]/journey-container/journey/flight-list/ry-spinner/div/flight-card-new")
 
 
 def scrape_flights(scrape_urls: [str]) -> [[str]]:
-    service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH"))
+    service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver"))
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--remote-debugging-port=9222') 
     driver = webdriver.Chrome(service=service, options=options)
 
     scraped_flights = []
@@ -35,12 +40,17 @@ def scrape_flights(scrape_urls: [str]) -> [[str]]:
                 ec.presence_of_all_elements_located((By.XPATH, FLIGHT_LIST_XPATH))
             )
 
+            t.sleep(0.5)
+
             scraped_flights.append([remove_unnecessary_data(element.text.split("\n")) for element in elements])
 
         except TimeoutException as exception:
             logging.error(
                 "Could not find the specified element with XPath.\nDeleting the probably no longer existent flight route.\nLink: %s",
                 scrape_url, exc_info=exception)
+            flight_route_id = mongo_service.find_flight_route_by_scrape_url(scrape_url)
+            stop_tracking_flight_route(flight_route_id)
+
             # handle_flight_not_found(scrape_url) FIXME: Implement this so it takes admin input
 
     driver.quit()

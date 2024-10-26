@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from bson import ObjectId
-
+import os
 from backend import mongo_service
 from backend.airport_search import get_airport_by_code
 from backend.custom_types import PriceChange, PriceRecord
@@ -27,7 +27,7 @@ def create_html_email(price_change: PriceChange) -> str:
     origin = get_airport_by_code(price_change.origin_code).upper()
     destination = get_airport_by_code(price_change.destination_code).upper()
 
-    with open("../resources/email_templates/price_change_email.html", "r") as file:
+    with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "../resources/email_templates/price_change_email.html")), "r") as file:
         html = file.read()
 
     html = html.replace("{flight_number}", price_change.flight_number)

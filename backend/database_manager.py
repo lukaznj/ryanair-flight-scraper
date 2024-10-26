@@ -29,7 +29,11 @@ def create_flight_route(flight_route_creation_request: FlightRouteCreationReques
 
         flight_route.flight_ids.append(flight_id)
 
-    return mongo_service.save_flight_route(flight_route)
+        flight_route_id = mongo_service.save_flight_route(flight_route)
+        
+        mongo_service.add_flight_route_to_tracking(flight_route_id)
+
+    return flight_route_id
 
 
 def add_price_record(flight_id: ObjectId, price_record: PriceRecord) -> ObjectId:
