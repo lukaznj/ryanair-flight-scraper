@@ -1,5 +1,6 @@
 import logging
 import os
+import subprocess
 import re
 import time as t
 from datetime import datetime, time
@@ -27,8 +28,14 @@ def scrape_flights(scrape_urls: [str]) -> [[str]]:
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--remote-debugging-port=9222') 
+    options.add_argument('--remote-debugging-port=9222')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-extensions')
+    options.add_argument('--disable-infobars')
+    options.add_argument('--disable-software-rasterizer')
+
     driver = webdriver.Chrome(service=service, options=options)
+    driver.maximize_window()
 
     scraped_flights = []
 
@@ -36,13 +43,11 @@ def scrape_flights(scrape_urls: [str]) -> [[str]]:
         try:
             driver.get(scrape_url)
 
-            elements = WebDriverWait(driver, float(os.getenv("WEBDRIVER_TIMEOUT"))).until(
+            elements = WebDriverWait(driver, float(os.getenv("WEBDRIVER_TIMEOUT", 10))).until(
                 ec.presence_of_all_elements_located((By.XPATH, FLIGHT_LIST_XPATH))
             )
-
-            t.sleep(0.5)
-
-            scraped_flights.append([remove_unnecessary_data(element.text.split("\n")) for element in elements])
+        
+            scraped_flights.append([remove_unnecessary_data(element.text.split("\n")) for element in elements if "Sold out" not in element.text])
 
         except TimeoutException as exception:
             logging.error(
@@ -52,7 +57,7 @@ def scrape_flights(scrape_urls: [str]) -> [[str]]:
             stop_tracking_flight_route(flight_route_id)
 
             # handle_flight_not_found(scrape_url) FIXME: Implement this so it takes admin input
-
+      
     driver.quit()
     return scraped_flights
 
@@ -109,7 +114,8 @@ def parse_price_record(scraped_flight_lines: [str]) -> PriceRecord:
 def remove_unnecessary_data(scraped_flight_lines: [str]) -> [str]:
     return list(filter(
         lambda
-            line: line != "Select" and line != "Ryanair" and "Operated" not in line and "Fare" not in line and "Plus" not in line and "left at this price" not in line,
+            line: line != "Select" and line != "Ryanair" and "Operated" not in line and "Fare" not in line and "Plus" not in 
+            line and "left at this price" not in line,
         scraped_flight_lines))
 
 

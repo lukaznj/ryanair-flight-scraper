@@ -1,12 +1,16 @@
 from streamlit import session_state as ss
 import streamlit as st
-import os
+import os, sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from backend import mongo_service
 from backend.custom_types import FlightRoute
 from backend.mongo_service import deserialize_flight_route
 from backend.users_service import user_create_flight_route, user_already_tracking_flight
 from frontend.custom_components.flight_route_card import flight_route_card
+
+
 
 st.set_page_config(page_title="Flight Tracking", page_icon="✈️")
 

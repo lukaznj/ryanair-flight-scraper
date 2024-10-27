@@ -1,14 +1,15 @@
 import streamlit as st
 
-import os
+import os, sys
 import streamlit_authenticator as stauth
 from streamlit import session_state as ss
 from streamlit_authenticator import RegisterError, LoginError
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
 from backend.database_manager import create_user
 
 CONFIG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../config/config.yaml'))
-
 
 st.set_page_config(page_title="Account", page_icon="🔐")
 
