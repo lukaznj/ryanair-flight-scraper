@@ -17,6 +17,20 @@ HIDE_IMG_FS = '''
             display: none;}
         </style>
         '''
+@st.dialog("Delete Tracked Flight")
+def delete_flight_route_dialog(flight_route: FlightRoute):
+    st.subheader("Are you sure you want to delete this tracked flight?")
+    st.caption("You can always add it back later.")
+    st.write("")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Cancel"):
+            st.rerun()
+    with col2:
+        if st.button("I am sure"):
+            user_id = mongo_service.find_user_by_email(st.session_state.email)
+            mongo_service.remove_flight_route_from_user(user_id, flight_route._id)
+            st.switch_page("🏠_Home.py")
 
 
 def flight_route_card(flight_route: FlightRoute):
@@ -38,7 +52,12 @@ def flight_route_card(flight_route: FlightRoute):
             st.markdown(f"<h2 style='text-align: center;'>{destination}</h2>", unsafe_allow_html=True)
             st.write("")
         with col4:
-            if st.button("View Graphs", key=flight_route.scrape_url):
-                flights = mongo_service.get_flight_route_flights(flight_route._id)
-                price_graphs_dialog([deserialize_flight(flight) for flight in flights])
+            col5, col6 = st.columns([1, 0.3])
+            with col5:
+                if st.button("View Graphs", key=flight_route.scrape_url + "_view"):
+                    flights = mongo_service.get_flight_route_flights(flight_route._id)
+                    price_graphs_dialog([deserialize_flight(flight) for flight in flights])
+            with col6:
+                if st.button("", icon=":material/delete:", key=flight_route.scrape_url + "_delete"):
+                    delete_flight_route_dialog(flight_route)
             st.write("📅 " + date)

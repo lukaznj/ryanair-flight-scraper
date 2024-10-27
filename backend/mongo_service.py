@@ -111,6 +111,10 @@ class MongoService:
         collection = self.get_collection("users")
         collection.update_one({"_id": user_id}, {"$push": {"followed_flight_route_ids": flight_route_id}})
 
+    def remove_flight_route_from_user(self, user_id: ObjectId, flight_route_id: ObjectId):
+        collection = self.get_collection("users")
+        collection.update_one({"_id": user_id}, {"$pull": {"followed_flight_route_ids": flight_route_id}})
+
     def add_flight_route_to_tracking(self, flight_route_id: ObjectId):
         collection = self.get_collection("system_data")
         collection.update_one({"_id": ObjectId(os.getenv("MONGO_TRACKED_FLIGHT_ROUTES_DOC_ID"))},
