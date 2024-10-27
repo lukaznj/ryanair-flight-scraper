@@ -17,24 +17,33 @@ st.set_page_config(page_title="Flight Tracking", page_icon="✈️")
 LOGO_CIRCLE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../resources/images/logo_circle.png'))
 LOGO_FULL_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../resources/images/logo_full.png'))
 
+
 st.logo(image=LOGO_FULL_PATH, icon_image=LOGO_CIRCLE_PATH, size="large")
 
 st.markdown(
     " <style> div[class^='stMainBlockContainer block-container'] { padding-top: 1rem; } .stMarkdown a { display: none; } [data-testid='stHeaderActionElements'] {display: none;}</style> ",
     unsafe_allow_html=True)
 
+def set_loading_true():
+    st.session_state.is_loading = True
 
 def track_new_flight():
+    if "is_loading" not in st.session_state:
+        st.session_state.is_loading = False
+
     scrape_url = st.text_input("Enter the URL to the Ryanair website for the flight you want to track",
                                placeholder="Enter URL here")
 
-    # TODO: Add URL validation
-    if st.button("Start Tracking"):
+    track_new_flight_button = st.button("Start Tracking", disabled=st.session_state.is_loading, on_click=set_loading_true)
+
+    if track_new_flight_button:
         if user_already_tracking_flight(scrape_url, st.session_state.email):
             st.error("You are already tracking this flight.")
         else:
-            user_create_flight_route(scrape_url, st.session_state.email)
-            st.success("Flight successfully added to tracking! To view it, go to the Tracked Flights tab.")
+            with st.spinner("Adding flight to tracking..."):
+                user_create_flight_route(scrape_url, st.session_state.email)
+                st.success("Flight successfully added to tracking! To view it, go to the Tracked Flights tab.")
+
 
 
 def get_tracked_flight_routes_for_user(email: str) -> [FlightRoute]:
